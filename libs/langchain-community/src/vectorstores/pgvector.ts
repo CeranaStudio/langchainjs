@@ -384,7 +384,7 @@ export class PGVectorStore extends VectorStore {
           cmetadata
         )
         VALUES (
-          uuid_generate_v4(),
+          gen_random_uuid(),
           $1,
           $2
         )
@@ -653,6 +653,18 @@ export class PGVectorStore extends VectorStore {
           parameters.push(..._value.in);
           paramCount += _value.in.length;
         }
+        if (Array.isArray(_value.notIn)) {
+          const placeholders = _value.notIn
+            .map(
+              (_: unknown, index: number) => `$${currentParamCount + index + 1}`
+            )
+            .join(",");
+          whereClauses.push(
+            `${this.metadataColumnName}->>'${key}' NOT IN (${placeholders})`
+          );
+          parameters.push(..._value.notIn);
+          paramCount += _value.notIn.length;
+        }
         if (Array.isArray(_value.arrayContains)) {
           const placeholders = _value.arrayContains
             .map(
@@ -733,10 +745,6 @@ export class PGVectorStore extends VectorStore {
       this.extensionSchemaName == null
         ? "CREATE EXTENSION IF NOT EXISTS vector;"
         : `CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA "${this.extensionSchemaName}";`;
-    const uuidQuery =
-      this.extensionSchemaName == null
-        ? 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
-        : `CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "${this.extensionSchemaName}";`;
     const extensionName =
       this.extensionSchemaName == null
         ? "vector"
@@ -746,14 +754,13 @@ export class PGVectorStore extends VectorStore {
       : extensionName;
     const tableQuery = `
       CREATE TABLE IF NOT EXISTS ${this.computedTableName} (
-        "${this.idColumnName}" uuid NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+        "${this.idColumnName}" uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
         "${this.contentColumnName}" text,
         "${this.metadataColumnName}" jsonb,
         "${this.vectorColumnName}" ${vectorColumnType}
       );
     `;
     await this.pool.query(vectorQuery);
-    await this.pool.query(uuidQuery);
     await this.pool.query(tableQuery);
   }
 
@@ -767,7 +774,7 @@ export class PGVectorStore extends VectorStore {
     try {
       const queryString = `
         CREATE TABLE IF NOT EXISTS ${this.computedCollectionTableName} (
-          uuid uuid NOT NULL DEFAULT uuid_generate_v4() PRIMARY KEY,
+          uuid uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
           name character varying,
           cmetadata jsonb
         );
