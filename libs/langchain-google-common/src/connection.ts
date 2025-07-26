@@ -350,11 +350,7 @@ export abstract class GoogleAIConnection<
   get computedLocation(): string {
     switch (this.apiName) {
       case "google":
-        if (this.modelName.startsWith("gemini-2.5-flash-lite")) {
-          return "global";
-        } else {
-          return super.computedLocation;
-        }
+        return super.computedLocation;
       case "anthropic":
         return "us-east5";
       default:
@@ -480,7 +476,14 @@ export abstract class AbstractGoogleLLMConnection<
     input: MessageType,
     parameters: GoogleAIModelRequestParams
   ): Promise<unknown> {
-    return this.api.formatData(input, parameters);
+    // Filter out labels for non-Vertex AI platforms (labels are only supported on Vertex AI)
+    let filteredParameters = parameters;
+    if (parameters.labels && this.platform !== "gcp") {
+      const { labels, ...paramsWithoutLabels } = parameters;
+      filteredParameters = paramsWithoutLabels;
+    }
+
+    return this.api.formatData(input, filteredParameters);
   }
 }
 
