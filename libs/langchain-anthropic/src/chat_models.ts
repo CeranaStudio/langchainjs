@@ -876,10 +876,7 @@ export class ChatAnthropicMessages<
       ...formattedMessages,
       stream: true,
     } as const;
-    const coerceContentToString =
-      !_toolsInParams(payload) &&
-      !_documentsInParams(payload) &&
-      !_thinkingInParams(payload);
+    const coerceContentToString = true;
 
     const stream = await this.createStreamWithRetry(payload, {
       headers: options.headers,

@@ -68,6 +68,7 @@ export function convertAuthorToRole(
      *  Note: Gemini currently is not supporting system messages
      *  we will convert them to human messages and merge with following
      * */
+    case "assistant":
     case "supervisor":
     case "ai":
     case "model": // getMessageAuthor returns message.name. code ex.: return message.name ?? type;
@@ -75,6 +76,8 @@ export function convertAuthorToRole(
     case "system":
       return "system";
     case "human":
+      return "user";
+    case "user":
       return "user";
     case "tool":
     case "function":

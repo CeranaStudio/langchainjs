@@ -100,19 +100,7 @@ export function _makeMessageChunkFromAnthropicEvent(
     }
     return {
       chunk: new AIMessageChunk({
-        content: fields.coerceContentToString
-          ? ""
-          : [
-              {
-                index: data.index,
-                ...data.content_block,
-                input:
-                  contentBlock.type === "server_tool_use" ||
-                  contentBlock.type === "tool_use"
-                    ? ""
-                    : undefined,
-              },
-            ],
+        content: "",
         additional_kwargs: {},
         tool_call_chunks: toolCallChunks,
       }),
@@ -145,14 +133,14 @@ export function _makeMessageChunkFromAnthropicEvent(
       ) {
         return {
           chunk: new AIMessageChunk({
-            content: [{ index: data.index, ...contentBlock, type: "thinking" }],
+            content: contentBlock.text || "",  // 直接提取文字內容
           }),
         };
       }
 
       return {
         chunk: new AIMessageChunk({
-          content: [{ index: data.index, ...contentBlock, type: "text" }],
+            content: contentBlock.text || "",  // 直接提取文字內容
         }),
       };
     }
