@@ -8,6 +8,7 @@ import {
   type AIMessage,
   type ToolMessage,
   type MessageContent,
+  ChatMessage,
   isAIMessage,
   type StandardContentBlockConverter,
   type StandardTextBlock,
@@ -487,7 +488,11 @@ export function _convertMessagesToAnthropicPayload(
   }
   const conversationMessages =
     system !== undefined ? mergedMessages.slice(1) : mergedMessages;
-  const formattedMessages = conversationMessages.map((message) => {
+  // If conversationMessages is empty, add an empty user message
+  const finalConversationMessages = conversationMessages.length === 0
+      ? [new ChatMessage(".", "user")]
+      : conversationMessages;
+  const formattedMessages = finalConversationMessages.map((message) => {
     let role;
     if (message._getType() === "human") {
       role = "user" as const;

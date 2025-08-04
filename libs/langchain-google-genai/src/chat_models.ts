@@ -899,6 +899,12 @@ export class ChatGoogleGenerativeAI
       this.client.systemInstruction = systemInstruction;
       actualPrompt = prompt.slice(1);
     }
+    // 如果 Prompt 為空，加上 User Message
+    if (actualPrompt.length === 0) {
+      actualPrompt = [{ role: "human", parts: [{
+          text: "."
+      }] }];
+    }
     const parameters = this.invocationParams(options);
     const request = {
       ...parameters,
