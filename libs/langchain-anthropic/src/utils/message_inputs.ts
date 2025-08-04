@@ -504,21 +504,6 @@ export function _convertMessagesToAnthropicPayload(
       throw new Error(
         "System messages are only permitted as the first passed message."
       );
-    } else if (message._getType() === "generic") {
-        if (ChatMessage.isInstance(message)) {
-            if (message.role === "user") {
-                role = "user";
-            }
-            else if (message.role === "assistant") {
-                role = "assistant";
-            }
-            else {
-                throw new Error("Only 'user' and 'assistant' are supported as message role.");
-            }
-        }
-        else {
-            throw new Error("Not instance of ChatMessage.");
-        }
     } else {
       throw new Error(`Message type "${message._getType()}" is not supported.`);
     }
