@@ -901,7 +901,7 @@ export class ChatGoogleGenerativeAI
     }
     // 如果 Prompt 為空，加上 User Message
     if (actualPrompt.length === 0) {
-      actualPrompt = [{ role: "human", parts: [{
+      actualPrompt = [{ role: "user", parts: [{
           text: "."
       }] }];
     }

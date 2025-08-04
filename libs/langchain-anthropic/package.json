@@ -1,6 +1,6 @@
 {
   "name": "@cerana/langchain-anthropic",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "This package contains the LangChain.js integrations for Anthropic via the anthropic-ai/sdk package.",
   "type": "module",
   "engines": {
